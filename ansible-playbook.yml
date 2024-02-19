@@ -17,4 +17,4 @@
     become_user : root
 
   - name: Deploy Docker Container
-    command: docker run -itd -p 8088:8089 somajoshi/healthinsurance
+    command: docker run -itd -p 8088:8089 somajoshi/healthinsurance:{{DOCKER_TAG}}
