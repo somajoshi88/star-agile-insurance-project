@@ -1,5 +1,5 @@
 pipeline{
-    agent any
+    agent { label  'slave1' }
    
     environment {
       DOCKER_TAG = getVersion()
@@ -48,8 +48,19 @@ pipeline{
 }
 
 def getVersion(){
-     def currentDir = pwd()
-     echo "Present Working Directory: ${currentDir}"
-    def commitHash = sh label: '', returnStdout: true, script: 'git rev-parse --short HEAD'
+    def currentDir = pwd()
+    echo "Present Working Directory: ${currentDir}"
+    def commitHash
+    try {
+        if (sh(script: 'git rev-parse --is-inside-work-tree', returnStdout: true).trim() == 'true') {
+            commitHash = sh(label: '', returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+        } else {
+            commitHash = "dummyTag"
+        }
+    } catch (Exception e) {
+        echo "Error: ${e}"
+        commitHash = "dummyTag"
+    }
+    
     return commitHash
 }
